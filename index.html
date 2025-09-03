@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire Discord</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 100px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <p>Vous pouvez gagner un cadeau</p><br/>
+  <p>Vous avez juste a entrez votre pseudo discord, a vous inscrire a Microsoft Rewards, et faire des recherches sur bing pour gagner des cartes cadeaux </p>
+  
+  <h1>Entre ton pseudo Discord</h1>
+  <form id="form">
+    <input type="text" id="pseudo" placeholder="Ton pseudo" required>
+    <button type="submit">Envoyer</button>
+  </form>
+  <div id="message"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoVanjazmtf7ljH6THmdXbdDxgo_dUX1E",
+      authDomain: "video-sandblock.firebaseapp.com",
+      databaseURL: "https://video-sandblock-default-rtdb.firebaseio.com",
+      projectId: "video-sandblock",
+      storageBucket: "video-sandblock.firebasestorage.app",
+      messagingSenderId: "522636159841",
+      appId: "1:522636159841:web:7c13b0ff217da5ee327320"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById("form");
+    const input = document.getElementById("pseudo");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pseudo = input.value.trim();
+      if (!pseudo) {
+        message.textContent = "Veuillez entrer un pseudo.";
+        message.style.color = "red";
+        return;
+      }
+
+      push(ref(db, "pseudos"), {
+        pseudo: pseudo,
+        date: new Date().toISOString()
+      })
+      .then(() => {
+        message.textContent = "✅ Pseudo enregistré ! Redirection...";
+        message.style.color = "green";
+        input.value = "";
+
+        // ⏳ Petite pause avant redirection
+        setTimeout(() => {
+          window.location.href = "https://rewards.bing.com/welcome?rh=2AA1D05C&ref=rafsrchae";
+        }, 1500);
+      })
+      .catch((error) => {
+        message.textContent = "❌ Erreur : " + error.message;
+        message.style.color = "red";
+      });
+    });
+  </script>
+</body>
+</html>
